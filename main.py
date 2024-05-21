@@ -1,7 +1,8 @@
 import sys
 import argparse
 import os
-RED = "\033[31m"
+RED = "\033[91m"
+DARK_RED = "\033[31m"
 GREEN = "\033[32m"
 RESET = "\033[0m"
 os.system('')
@@ -80,6 +81,20 @@ def format_and_print_sequence_counts(sequence_counts):
     for i, count in enumerate(sequence_counts):
         print(f'{labels[i]}: {count}')
 
+# Define the Ao5 calculation functions
+def getAo5(sequence):
+    sorted_sequence = sorted(sequence)
+    return sum(sorted_sequence[1:-1]) / 3  # Exclude the best and worst, then calculate mean
+
+def getWorstPossibleAo5(sequence):
+    sorted_sequence = sorted(sequence)
+    return sum(sorted_sequence[1:]) / 3  # Exclude the best, then calculate mean
+
+def getBestPossibleAo5(sequence):
+    sorted_sequence = sorted(sequence)
+    return sum(sorted_sequence[:-1]) / 3  # Exclude the worst, then calculate mean
+
+
 def main():
     parser = argparse.ArgumentParser(description='Classify sequences of solves.')
     parser.add_argument('--file', type=str, default='input.txt', help='Input file containing solves from oldest to latest. Format: "SOLVE_TIME{TAB}COMPLETED". SOLVE_TIME is a float or a string for skipped scrambles. COMPLETED is a string TRUE or FALSE. Separator is a TAB.')
@@ -106,11 +121,26 @@ def main():
 
     for lucky_counter, sequence in sequences_with_lucky:
         if lucky_counter >= minlucky:
+            seq_len = len(sequence) - sequence.count(999999)
             colored_sequence = [
-                f"{RED}{num}{RESET}" if num > threshold else f"{GREEN}{num}{RESET}" for num in sequence
+                f"{DARK_RED}_DNS_{RESET}" if num == 999999 else (f"{RED}{num:.3f}{RESET}" if num > threshold else f"{GREEN}{num:.3f}{RESET}")
+                for num in sequence
             ]
-            colored_sequence_str = ", ".join(colored_sequence)
-            print(f"{lucky_counter} solves, Sequence: {colored_sequence_str}")
+            colored_sequence_str = "\t".join(colored_sequence)
+            print(f"Lucky solves: {lucky_counter}: {colored_sequence_str}", end='')
+            if seq_len == 5:
+                ao5 = getAo5(sequence)
+                print(f"\t[Ao5: {ao5:.3f}]")
+            elif seq_len == 4:
+                worst_possible_ao5 = getWorstPossibleAo5(sequence)
+                best_possible_ao5 = getBestPossibleAo5(sequence)
+                if 999999 in sequence and len(sequence) == 5:
+                    print(f"\t[Best possible average: {best_possible_ao5:.3f}]")
+                else:
+                    print(f"\t\t[Possible average: from {best_possible_ao5:.3f} to {worst_possible_ao5:.3f}]")
+            else:
+                print("")
+
 
 if __name__ == "__main__":
     main()
