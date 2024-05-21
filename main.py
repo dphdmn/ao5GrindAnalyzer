@@ -140,23 +140,23 @@ def main():
                 for num in sequence
             ]
             colored_sequence_str = "\t".join(colored_sequence)
-            print(f"Lucky solves: {lucky_counter}: {colored_sequence_str}", end='')
+            print(f"\nLucky solves: {lucky_counter}: {colored_sequence_str}", end='')
             if seq_len == 5:
                 ao5 = getAo5(sequence)
-                print(f"\t[ao5: {ao5:.3f}]")
+                print(f"\t[ao5: {ao5:.3f}]", end='')
             elif seq_len == 4:
                 worst_possible_ao5 = getWorstPossibleAo5(sequence)
                 best_possible_ao5 = getBestPossibleAo5(sequence)
                 if DNF in sequence and len(sequence) == 5:
-                    print(f"\t[ao5: {best_possible_ao5:.3f}] (if slidysim allowed DNF/DNS)")
+                    print(f"\t[ao5: {best_possible_ao5:.3f}] (if slidysim allowed DNF/DNS)", end='')
                 else:
-                    print(f"\t\t[BPA: {best_possible_ao5:.3f} / WPA: {worst_possible_ao5:.3f}]")
+                    print(f"\t\t[BPA: {best_possible_ao5:.3f} / WPA: {worst_possible_ao5:.3f}]", end='')
             elif seq_len == 3:
                 if len(sequence) == 4:
                     best_possible_ao5 = getBestPossibleAo5(sequence)
-                    print(f"\t\t[BPA: {best_possible_ao5:.3f} / WPA: inf]")
-            else:
-                print(f"\t\t[BPA: inf / WPA: inf]")
+                    print(f"\t\t[BPA: {best_possible_ao5:.3f} / WPA: inf]", end='')
+
+
 
 
 if __name__ == "__main__":
