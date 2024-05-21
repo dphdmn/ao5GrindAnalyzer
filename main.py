@@ -22,15 +22,14 @@ def classify_solves(solves, good_solve_threshold, ok_solve_threshold):
                     penalty = True
 
                 if penalty:
-                    sequence_counts[lucky_counter] += 1
+                    sequence_counts[min(lucky_counter, 4)] += 1
                     break
-
             else:
                 # If we completed the loop without a break (all 4 solves are OK)
-                if i + 5 < len(solves) and solves[i + 4] < ok_solve_threshold:
+                if i + 4 < len(solves) and solves[i + 4] < ok_solve_threshold:
                     lucky_counter += 1
 
-                sequence_counts[lucky_counter] += 1
+                sequence_counts[min(lucky_counter, 4)] += 1
 
             i += j
         else:
