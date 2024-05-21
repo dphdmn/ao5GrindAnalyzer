@@ -106,7 +106,7 @@ def getBestPossibleAo5(sequence):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Classify sequences of solves.')
+    parser = argparse.ArgumentParser(description='Analyze the best attempts at setting an average of 5 (ao5) score in speedsolving, primarily in Slidysim.')
     parser.add_argument('--file', type=str, default='input.txt', help='Input file containing solves from oldest to latest. Format: "SOLVE_TIME{TAB}COMPLETED". SOLVE_TIME is a float or a string for skipped scrambles. COMPLETED is a string TRUE or FALSE. Separator is a TAB. Default file: "input.txt"')
     parser.add_argument('--good', type=float, default=0.4, help='Threshold for a good solve to start a sequence (for example, solve less than your average). Default: 0.4')
     parser.add_argument('--ok', type=float, default=0.5, help='Threshold for an ok solve (solve that you think would be nice for an average). Default: 0.5')
