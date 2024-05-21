@@ -60,11 +60,11 @@ def read_solves_from_file(file_path, ok_solve_threshold):
 
 def format_and_print_sequence_counts(sequence_counts):
     labels = [
-        "No lucky solve",
-        "1 lucky solve",
-        "2 lucky solves",
-        "3 lucky solves",
-        "4 lucky solves"
+        "No lucky solves (reset after 3 solves)",
+        "1 lucky solve (reset after 4 solves)",
+        "2 lucky solves (painful reset after 5 solves)",
+        "3 lucky solves (ao5!)",
+        "4 lucky solves (very good ao5!)"
     ]
 
     for i, count in enumerate(sequence_counts):
@@ -82,7 +82,7 @@ def main():
     solves = read_solves_from_file(args.file, args.ok)
     total_sequences, sequence_counts = classify_solves(solves, args.good, args.ok)
 
-    print(f'Total Sequences: {total_sequences}')
+    print(f'Total Sequences (first solve good): {total_sequences}')
     format_and_print_sequence_counts(sequence_counts)
 
 if __name__ == "__main__":
