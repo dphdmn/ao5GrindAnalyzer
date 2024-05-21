@@ -103,6 +103,24 @@ def getBestPossibleAo5(sequence):
     sorted_sequence = sorted(sequence)
     return sum(sorted_sequence[:-1]) / 3  # Exclude the worst, then calculate mean
 
+def getGoalReq(sequence, goal, bpa, wpa):
+    if goal < bpa:
+        return "is impossible"
+    if goal > wpa:
+        return "is inevitable"
+    
+    sorted_sequence = sorted(sequence)
+    # Exclude the best and worst solves from the sorted sequence
+    remaining_solves = sorted_sequence[1:-1]  # This assumes sequence has at least four elements
+    
+    if len(remaining_solves) != 2:
+        raise ValueError("Sequence must have at least four elements to exclude the best and worst solves.")
+    
+    first_solve_left, second_solve_left = remaining_solves
+    required_third_solve = goal * 3 - (first_solve_left + second_solve_left)
+    
+    return f"needs {required_third_solve:.3f}"
+
 
 def main():
     parser = argparse.ArgumentParser(description='Analyze the best attempts at setting an average of 5 (ao5) score in speedsolving, primarily in Slidysim.')
@@ -111,6 +129,7 @@ def main():
     parser.add_argument('--ok', type=float, default=0.5, help='Threshold for an ok solve (solve that you think would be nice for an average). Default: 0.5')
     parser.add_argument('--minlucky', type=int, default=1, help='Minimum amount of solves in sequnce to print (from 0 to 4). Default: 1') 
     parser.add_argument('--overlap', type=int, default=1, help='1 to allow sequence overlapping, 0 to not allow (can help finding certain averages). Default: 1') 
+    parser.add_argument('--goal', type=float, default=0.4, help='Your goal value for average, useful for stats with 1 lucky solve. Default: 0.4') 
     args = parser.parse_args()
     minlucky = args.minlucky
     if minlucky < 0 or minlucky > 4:
@@ -127,7 +146,7 @@ def main():
 
     print(f"\nSequences (min {minlucky}):")
     threshold = args.ok
-
+    goal = args.goal
     for lucky_counter, sequence in sequences_with_lucky:
         if lucky_counter >= minlucky:
             seq_len = len(sequence) - sequence.count(DNF) - sequence.count(DNS)
@@ -150,10 +169,12 @@ def main():
                     print(f"\t[ao5: {best_possible_ao5:.3f}] (if slidysim allowed DNF/DNS)", end='')
                 else:
                     print(f"\t\t[BPA: {best_possible_ao5:.3f} / WPA: {worst_possible_ao5:.3f}]", end='')
+                    print(f"\tgoal (<{goal}) {getGoalReq(sequence, goal, best_possible_ao5, worst_possible_ao5)}", end='')
             elif seq_len == 3:
                 if len(sequence) == 4:
                     best_possible_ao5 = getBestPossibleAo5(sequence)
                     print(f"\t\t[BPA: {best_possible_ao5:.3f} / WPA: inf]", end='')
+                    print(f"\t\tgoal (<{goal}) {getGoalReq(sequence, goal, best_possible_ao5, worst_possible_ao5)}", end='')
 
 
 
