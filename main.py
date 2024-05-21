@@ -1,6 +1,7 @@
 import sys
 import argparse
 import os
+GRAY = "\033[90m"
 RED = "\033[91m"
 DARK_RED = "\033[31m"
 GREEN = "\033[32m"
@@ -21,7 +22,7 @@ def classify_solves(solves, good_solve_threshold, ok_solve_threshold, overlappin
             lucky_counter = 0
             penalty = False
             current_sequence = [solves[i]]
-
+            extrasolve = DNS
             for j in range(1, 5):
                 if i + j >= len(solves):
                     break
@@ -33,7 +34,9 @@ def classify_solves(solves, good_solve_threshold, ok_solve_threshold, overlappin
                 else:
                     if penalty:
                         sequence_counts[lucky_counter] += 1
-                        sequences_with_lucky.append((lucky_counter, current_sequence))
+                        if i+j+1 < len(solves):
+                            extrasolve = solves[i+j+1]
+                        sequences_with_lucky.append((lucky_counter, current_sequence, extrasolve))
                         break
                     else:
                         penalty = True
@@ -147,7 +150,7 @@ def main():
     print(f"\nSequences (min {minlucky}):")
     threshold = args.ok
     goal = args.goal
-    for lucky_counter, sequence in sequences_with_lucky:
+    for lucky_counter, sequence, extrasolve in sequences_with_lucky:
         if lucky_counter >= minlucky:
             seq_len = len(sequence) - sequence.count(DNF) - sequence.count(DNS)
             colored_sequence = [
@@ -157,6 +160,7 @@ def main():
                 f"{GREEN}{num:.3f}{RESET}"
                 for num in sequence
             ]
+            colored_extra = f"{GRAY}_DNF_{RESET}" if extrasolve == DNF else f"{GRAY}_DNS_{RESET}" if extrasolve == DNS else f"{GRAY}{extrasolve:.3f}{RESET}"
             colored_sequence_str = "\t".join(colored_sequence)
             print(f"\nLucky solves: {lucky_counter}: {colored_sequence_str}", end='')
             if seq_len == 5:
@@ -168,12 +172,14 @@ def main():
                 if DNF in sequence and len(sequence) == 5:
                     print(f"\t[ao5: {best_possible_ao5:.3f}] (if slidysim allowed DNF/DNS)", end='')
                 else:
-                    print(f"\t\t[BPA: {best_possible_ao5:.3f} / WPA: {worst_possible_ao5:.3f}]", end='')
+                    print(f"\t{colored_extra}", end='')
+                    print(f"\t[BPA: {best_possible_ao5:.3f} / WPA: {worst_possible_ao5:.3f}]", end='')
                     print(f"\tgoal (<{goal}) {getGoalReq(sequence, goal, best_possible_ao5, worst_possible_ao5)}", end='')
             elif seq_len == 3:
                 if len(sequence) == 4:
                     best_possible_ao5 = getBestPossibleAo5(sequence)
-                    print(f"\t\t[BPA: {best_possible_ao5:.3f} / WPA: inf]", end='')
+                    print(f"\t{colored_extra}", end='')
+                    print(f"\t[BPA: {best_possible_ao5:.3f} / WPA: inf]", end='')
                     print(f"\t\tgoal (<{goal}) {getGoalReq(sequence, goal, best_possible_ao5, worst_possible_ao5)}", end='')
 
 
