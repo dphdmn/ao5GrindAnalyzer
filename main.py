@@ -43,7 +43,9 @@ def classify_solves(solves, good_solve_threshold, ok_solve_threshold, overlappin
 
             else:
                 sequence_counts[lucky_counter] += 1
-                sequences_with_lucky.append((lucky_counter, current_sequence))
+                if i+j+1 < len(solves):
+                    extrasolve = solves[i+j+1]
+                sequences_with_lucky.append((lucky_counter, current_sequence, extrasolve))
             if overlappingAllowed == 1:
                 i += 1
             else:
@@ -122,7 +124,7 @@ def getGoalReq(sequence, goal, bpa, wpa):
     first_solve_left, second_solve_left = remaining_solves
     required_third_solve = goal * 3 - (first_solve_left + second_solve_left)
     
-    return f"needs {required_third_solve:.3f}"
+    return f"needed {required_third_solve:.3f}"
 
 
 def main():
@@ -165,12 +167,20 @@ def main():
             print(f"\nLucky solves: {lucky_counter}: {colored_sequence_str}", end='')
             if seq_len == 5:
                 ao5 = getAo5(sequence)
+                shorter_seq = sequence[:-1]
+                worst_possible_ao5 = getWorstPossibleAo5(shorter_seq)
+                best_possible_ao5 = getBestPossibleAo5(shorter_seq)
                 print(f"\t[ao5: {ao5:.3f}]", end='')
+                print(f"\tgoal (<{goal}) {getGoalReq(shorter_seq, goal, best_possible_ao5, worst_possible_ao5)}", end='')
             elif seq_len == 4:
                 worst_possible_ao5 = getWorstPossibleAo5(sequence)
                 best_possible_ao5 = getBestPossibleAo5(sequence)
                 if DNF in sequence and len(sequence) == 5:
                     print(f"\t[ao5: {best_possible_ao5:.3f}] (if slidysim allowed DNF/DNS)", end='')
+                    shorter_seq = sequence[:-1]
+                    worst_possible_ao5 = getWorstPossibleAo5(shorter_seq)
+                    best_possible_ao5 = getBestPossibleAo5(shorter_seq)
+                    print(f"\tgoal (<{goal}) {getGoalReq(shorter_seq, goal, best_possible_ao5, worst_possible_ao5)}", end='')
                 else:
                     print(f"\t{colored_extra}", end='')
                     print(f"\t[BPA: {best_possible_ao5:.3f} / WPA: {worst_possible_ao5:.3f}]", end='')
