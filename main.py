@@ -39,8 +39,7 @@ def classify_solves(solves, good_solve_threshold, ok_solve_threshold, overlappin
                         penalty = True
 
             else:
-                if not penalty:
-                    sequence_counts[lucky_counter] += 1
+                sequence_counts[lucky_counter] += 1
                 sequences_with_lucky.append((lucky_counter, current_sequence))
             if overlappingAllowed == 1:
                 i += 1
